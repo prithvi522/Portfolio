@@ -19,7 +19,6 @@ export default function Torus({
     if (mainRef.current) {
       mainRef.current.rotation.y += delta * 1.45;
 
-      // Very subtle natural movement
       mainRef.current.rotation.x =
         0.92 + Math.sin(time * 0.8) * 0.025;
 
@@ -39,7 +38,6 @@ export default function Torus({
       glowRef.current.rotation.z =
         -0.38 + Math.sin(time * 0.5) * 0.015;
 
-      // Pulsing glow
       glowRef.current.material.opacity =
         0.12 + Math.sin(time * 2.2) * 0.035;
     }
@@ -66,16 +64,17 @@ export default function Torus({
       >
 
         {/* =====================================
-            MAIN TORUS
+            MAIN TORUS — LARGER
         ===================================== */}
         <mesh
           ref={mainRef}
           rotation={[0.92, 0, -0.38]}
+          scale={1.28}
         >
           <torusGeometry
             args={[
-              0.9,
-              0.13,
+              1.05,
+              0.145,
               64,
               192,
             ]}
@@ -90,18 +89,19 @@ export default function Torus({
           />
         </mesh>
 
+
         {/* =====================================
-            SOFT CYAN GLOW
+            SOFT CYAN GLOW — LARGER
         ===================================== */}
         <mesh
           ref={glowRef}
           rotation={[0.92, 0, -0.38]}
-          scale={1.045}
+          scale={1.32}
         >
           <torusGeometry
             args={[
-              0.9,
-              0.155,
+              1.05,
+              0.17,
               48,
               160,
             ]}
@@ -115,17 +115,18 @@ export default function Torus({
           />
         </mesh>
 
+
         {/* =====================================
-            OUTER ENERGY RING
+            OUTER ENERGY RING — LARGER
         ===================================== */}
         <mesh
           ref={outerRef}
           rotation={[0.92, 0, -0.38]}
-          scale={1.085}
+          scale={1.37}
         >
           <torusGeometry
             args={[
-              0.9,
+              1.05,
               0.018,
               24,
               160,
@@ -139,16 +140,17 @@ export default function Torus({
           />
         </mesh>
 
+
         {/* =====================================
-            INNER ENERGY RING
+            INNER ENERGY RING — LARGER
         ===================================== */}
         <mesh
           rotation={[0.92, 0, -0.38]}
-          scale={0.88}
+          scale={1.08}
         >
           <torusGeometry
             args={[
-              0.9,
+              1.05,
               0.012,
               20,
               128,

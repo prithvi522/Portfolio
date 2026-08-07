@@ -1,173 +1,186 @@
-import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-export default function Galaxy() {
-  const groupRef = useRef();
+function createRibbon(seed, count = 1800) {
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
 
-  /*
-   * ==========================================
-   * GALAXY TIMING
-   * ==========================================
-   *
-   * Increase these numbers = slower animation
-   *
-   * 8   = fast
-   * 15  = medium
-   * 25  = slow
-   * 40  = very slow / cinematic
-   */
+  const cyan = new THREE.Color("#22d3ee");
+  const blue = new THREE.Color("#6366f1");
+  const purple = new THREE.Color("#c026d3");
+  const pink = new THREE.Color("#ec4899");
 
-  const ROTATION_TIME = 40;
-  const FLOW_TIME = 18;
-  const WAVE_TIME = 12;
+  for (let i = 0; i < count; i++) {
+    const t = i / (count - 1);
 
-  const particles = useMemo(() => {
-    const count = 6500;
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
+    // Wide horizontal galaxy path
+    const x = (t - 0.5) * 13;
 
-    const color1 = new THREE.Color("#22d3ee");
-    const color2 = new THREE.Color("#6366f1");
-    const color3 = new THREE.Color("#d946ef");
+    // Different wave for every ribbon
+    const wave =
+      Math.sin(t * Math.PI * 2.5 + seed) * 1.05 +
+      Math.sin(t * Math.PI * 5.2 + seed * 1.7) * 0.35;
 
-    for (let i = 0; i < count; i++) {
-      const i3 = i * 3;
+    const y =
+      wave +
+      Math.sin(t * Math.PI * 9 + seed) * 0.08;
 
-      const t = Math.random();
-      const angle = t * Math.PI * 2;
+    // Natural thickness
+    const spread =
+      (Math.random() - 0.5) *
+      (0.16 + Math.sin(t * Math.PI) * 0.28);
 
-      /*
-       * Large flowing ribbon shape
-       */
-      const radius =
-        1.2 +
-        Math.random() * 3.5;
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y + spread;
+    positions[i * 3 + 2] =
+      (Math.random() - 0.5) * 1.5;
 
-      const wave =
-        Math.sin(angle * 2.2) * 0.75 +
-        Math.sin(angle * 4.0) * 0.3;
+    // Gradient color along ribbon
+    const colorPosition =
+      (t + seed * 0.13) % 1;
 
-      const x =
-        Math.cos(angle) * radius;
+    const color = new THREE.Color();
 
-      const z =
-        Math.sin(angle) * radius;
-
-      const y =
-        wave +
-        (Math.random() - 0.5) * 0.18;
-
-      positions[i3] = x;
-      positions[i3 + 1] = y;
-      positions[i3 + 2] = z;
-
-      /*
-       * Cyan → blue → purple
-       */
-      const colorT = Math.random();
-
-      let color;
-
-      if (colorT < 0.45) {
-        color = color1.clone().lerp(
-          color2,
-          colorT / 0.45
-        );
-      } else {
-        color = color2.clone().lerp(
-          color3,
-          (colorT - 0.45) / 0.55
-        );
-      }
-
-      colors[i3] = color.r;
-      colors[i3 + 1] = color.g;
-      colors[i3 + 2] = color.b;
+    if (colorPosition < 0.33) {
+      color.lerpColors(
+        cyan,
+        blue,
+        colorPosition / 0.33
+      );
+    } else if (colorPosition < 0.66) {
+      color.lerpColors(
+        blue,
+        purple,
+        (colorPosition - 0.33) / 0.33
+      );
+    } else {
+      color.lerpColors(
+        purple,
+        pink,
+        (colorPosition - 0.66) / 0.34
+      );
     }
 
-    return {
-      positions,
-      colors,
-    };
-  }, []);
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+  }
+
+  return { positions, colors };
+}
+
+function Ribbon({ index }) {
+  const pointsRef = useRef();
+
+  const data = useMemo(
+    () => createRibbon(index * 1.7),
+    [index]
+  );
 
   useFrame((state) => {
-    if (!groupRef.current) return;
+    if (!pointsRef.current) return;
 
-    const elapsed = state.clock.elapsedTime;
-
-    /*
-     * ==========================================
-     * MAIN GALAXY ROTATION
-     * ==========================================
-     *
-     * 40 seconds for one complete rotation.
-     */
-    groupRef.current.rotation.y =
-      (elapsed / ROTATION_TIME) *
-      Math.PI *
-      2;
+    const time = state.clock.elapsedTime;
 
     /*
-     * ==========================================
-     * SLOW VERTICAL MOTION
-     * ==========================================
-     */
-    groupRef.current.position.y =
+      Continuous flowing movement.
+
+      Each ribbon has a different speed,
+      direction and phase so they don't
+      look synchronized.
+    */
+    pointsRef.current.rotation.y =
+      Math.sin(time * (0.08 + index * 0.015)) * 0.18;
+
+    pointsRef.current.rotation.z =
+      Math.sin(time * (0.12 + index * 0.01) + index) *
+      0.025;
+
+    pointsRef.current.position.y =
       Math.sin(
-        (elapsed / WAVE_TIME) *
-          Math.PI *
-          2
-      ) * 0.08;
-
-    /*
-     * ==========================================
-     * VERY SUBTLE SIDE MOVEMENT
-     * ==========================================
-     */
-    groupRef.current.position.x =
-      Math.sin(
-        (elapsed / FLOW_TIME) *
-          Math.PI *
-          2
+        time * 0.35 + index * 1.4
       ) * 0.12;
+
+    pointsRef.current.position.x =
+      Math.sin(
+        time * 0.18 + index
+      ) * 0.18;
+
+    // Slowly pulse particle size
+    const material = pointsRef.current.material;
+
+    material.size =
+      0.018 +
+      Math.sin(
+        time * 1.2 + index
+      ) * 0.004;
   });
 
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+
+    geo.setAttribute(
+      "position",
+      new THREE.BufferAttribute(
+        data.positions,
+        3
+      )
+    );
+
+    geo.setAttribute(
+      "color",
+      new THREE.BufferAttribute(
+        data.colors,
+        3
+      )
+    );
+
+    return geo;
+  }, [data]);
+
+  return (
+    <points
+      ref={pointsRef}
+      geometry={geometry}
+      rotation={[
+        index * 0.12,
+        index * 0.18,
+        index * 0.08,
+      ]}
+    >
+      <pointsMaterial
+        size={0.018}
+        vertexColors
+        transparent
+        opacity={0.82}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
+  );
+}
+
+export default function Galaxy() {
   return (
     <group
-      ref={groupRef}
       position={[0, 0, -0.8]}
-      rotation={[0.15, 0, -0.18]}
-      scale={1.18}
+      scale={[1, 1, 1]}
     >
-      <points>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={particles.positions.length / 3}
-            array={particles.positions}
-            itemSize={3}
-          />
+      {/* Main flowing ribbons */}
+      <Ribbon index={0} />
+      <Ribbon index={1} />
+      <Ribbon index={2} />
+      <Ribbon index={3} />
+      <Ribbon index={4} />
+      <Ribbon index={5} />
 
-          <bufferAttribute
-            attach="attributes-color"
-            count={particles.colors.length / 3}
-            array={particles.colors}
-            itemSize={3}
-          />
-        </bufferGeometry>
-
-        <pointsMaterial
-          size={0.025}
-          vertexColors
-          transparent
-          opacity={0.82}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          sizeAttenuation
-        />
-      </points>
+      {/* Additional thinner distant ribbons */}
+      <group scale={1.08} opacity={0.65}>
+        <Ribbon index={6} />
+        <Ribbon index={7} />
+      </group>
     </group>
   );
 }
