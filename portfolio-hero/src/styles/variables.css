@@ -1,0 +1,27 @@
+:root{
+
+    --bg:#030312;
+
+    --bg2:#090B1D;
+
+    --primary:#6E56FF;
+
+    --secondary:#2BCBFF;
+
+    --pink:#FF3CF7;
+
+    --white:#ffffff;
+
+    --gray:#b7b7b7;
+
+    --card:rgba(255,255,255,.05);
+
+    --border:rgba(255,255,255,.08);
+
+    --shadow:0 0 40px rgba(111,86,255,.35);
+
+    --radius:20px;
+
+    --transition:.35s ease;
+
+}
