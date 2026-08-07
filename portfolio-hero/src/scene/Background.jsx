@@ -1,19 +1,17 @@
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useThree } from "@react-three/fiber";
+import { useEffect } from "react";
+import * as THREE from "three";
 
 export default function Background() {
-  const meshRef = useRef(null);
+  const { scene } = useThree();
 
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.08) * 0.025;
-    }
-  });
+  useEffect(() => {
+    scene.background = new THREE.Color("#02030d");
 
-  return (
-    <mesh ref={meshRef} position={[0.8, 0, -4.6]} scale={[8.2, 8.2, 1]}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <meshBasicMaterial color="#0b0a2b" transparent opacity={0.34} depthWrite={false} />
-    </mesh>
-  );
+    return () => {
+      scene.background = null;
+    };
+  }, [scene]);
+
+  return null;
 }

@@ -1,92 +1,133 @@
-import { motion } from "framer-motion";
-import { FaEnvelope, FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import {
+  FaGithub,
+  FaLinkedinIn,
+  FaTwitter,
+  FaEnvelope,
+} from "react-icons/fa";
 
 import Scene from "../../scene/Scene";
+
 import "./Hero.css";
 
-const socialLinks = [
-  {
-    href: "https://linkedin.com",
-    label: "LinkedIn",
-    icon: <FaLinkedin />,
-  },
-  {
-    href: "https://github.com",
-    label: "GitHub",
-    icon: <FaGithub />,
-  },
-  {
-    href: "https://twitter.com",
-    label: "Twitter",
-    icon: <FaTwitter />,
-  },
-  {
-    href: "mailto:example@gmail.com",
-    label: "Email",
-    icon: <FaEnvelope />,
-  },
-];
-
-function Hero() {
+export default function Hero() {
   return (
-    <section className="hero" id="home">
-      <div className="hero-grid">
-        <motion.div
-          className="hero-left"
-          initial={{ opacity: 0, x: -42 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <p className="hero-kicker">HELLO</p>
+    <section className="hero">
 
-          <h1 className="hero-title">
-            Prithviraj
-            <span>Gavali</span>
-          </h1>
-
-          <div className="hero-rule" />
-
-          <h2 className="hero-role">
-            Frontend Developer
-            <span> & Creative Technologist</span>
-          </h2>
-
-          <p className="hero-copy">
-            I craft exceptional digital experiences with clean code, beautiful
-            user interfaces, smooth animations, immersive web experiences and
-            modern technologies.
-          </p>
-
-          <div className="hero-socials" aria-label="Social links">
-            {socialLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                aria-label={link.label}
-                target={link.href.startsWith("mailto:") ? undefined : "_blank"}
-                rel={
-                  link.href.startsWith("mailto:")
-                    ? undefined
-                    : "noopener noreferrer"
-                }
-              >
-                {link.icon}
-              </a>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="hero-right"
-          initial={{ opacity: 0, x: 36, scale: 0.98 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <Scene />
-        </motion.div>
+      {/* =========================================
+          THREE.JS BACKGROUND
+      ========================================= */}
+      <div className="hero-scene">
+        <Scene />
       </div>
+
+
+      {/* =========================================
+          DARK LEFT OVERLAY
+      ========================================= */}
+      <div className="hero-left-glow" />
+
+
+      {/* =========================================
+          HERO CONTENT
+      ========================================= */}
+      <div className="hero-content">
+
+        {/* Greeting */}
+        <div className="hero-greeting">
+          HELLO, I'M
+        </div>
+
+
+        {/* Name */}
+        <h1 className="hero-name">
+
+          <span className="hero-name-white">
+            Prithviraj
+          </span>
+
+          <span className="hero-name-gradient">
+            Gavali
+          </span>
+
+        </h1>
+
+
+        {/* Divider */}
+        <div className="hero-divider">
+          <span />
+        </div>
+
+
+        {/* Role */}
+        <h2 className="hero-role">
+          Frontend Developer &amp; Creative Technologist
+        </h2>
+
+
+        {/* Description */}
+        <p className="hero-description">
+          I craft exceptional digital experiences with clean code,
+          smooth animations, and <span>modern design.</span>
+        </p>
+
+
+        {/* Social Icons */}
+        <div className="hero-socials">
+
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn"
+          >
+            <FaLinkedinIn />
+          </a>
+
+
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub"
+          >
+            <FaGithub />
+          </a>
+
+
+          <a
+            href="#"
+            aria-label="Twitter"
+          >
+            <FaTwitter />
+          </a>
+
+
+          <a
+            href="mailto:your@email.com"
+            aria-label="Email"
+          >
+            <FaEnvelope />
+          </a>
+
+        </div>
+
+      </div>
+
+
+      {/* =========================================
+          SCROLL INDICATOR
+      ========================================= */}
+      <div className="hero-scroll">
+
+        <div className="scroll-line">
+          <div className="scroll-dot" />
+        </div>
+
+        <span>SCROLL</span>
+        <span>DOWN</span>
+
+      </div>
+
     </section>
   );
 }
-
-export default Hero;

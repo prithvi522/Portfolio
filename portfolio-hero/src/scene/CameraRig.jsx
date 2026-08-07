@@ -1,21 +1,35 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo } from "react";
-import * as THREE from "three";
+import { useRef } from "react";
 
 export default function CameraRig() {
-  const { camera, pointer } = useThree();
-  const lookTarget = useMemo(() => new THREE.Vector3(0.28, -0.04, 0), []);
+  const { camera } = useThree();
+
+  const target = useRef({
+    x: 0,
+    y: 0,
+  });
 
   useFrame((state) => {
-    const elapsed = state.clock.elapsedTime;
-    const targetX = 3.35 + pointer.x * 0.28;
-    const targetY = 1.28 + pointer.y * 0.18 + Math.sin(elapsed * 0.22) * 0.035;
-    const targetZ = 7.2;
+    const mouseX = state.pointer.x;
+    const mouseY = state.pointer.y;
 
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetX, 0.045);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetY, 0.045);
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.045);
-    camera.lookAt(lookTarget);
+    target.current.x +=
+      (mouseX * 0.16 -
+        target.current.x) *
+      0.025;
+
+    target.current.y +=
+      (mouseY * 0.10 -
+        target.current.y) *
+      0.025;
+
+    camera.position.x =
+      target.current.x;
+
+    camera.position.y =
+      target.current.y;
+
+    camera.lookAt(0, 0, 0);
   });
 
   return null;

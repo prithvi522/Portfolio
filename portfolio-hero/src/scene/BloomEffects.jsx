@@ -1,17 +1,17 @@
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import { BlendFunction, KernelSize } from "postprocessing";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
 export default function BloomEffects() {
   return (
-    <EffectComposer multisampling={0}>
+    <EffectComposer
+      multisampling={0}
+      enableNormalPass={false}
+    >
       <Bloom
-        intensity={0.78}
-        luminanceThreshold={0.18}
-        luminanceSmoothing={0.72}
+        intensity={1.2}
+        luminanceThreshold={0.2}
+        luminanceSmoothing={0.7}
         mipmapBlur
-        kernelSize={KernelSize.MEDIUM}
       />
-      <Vignette blendFunction={BlendFunction.NORMAL} eskil={false} offset={0.22} darkness={0.58} />
     </EffectComposer>
   );
 }

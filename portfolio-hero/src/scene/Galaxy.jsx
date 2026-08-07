@@ -2,73 +2,172 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const PARTICLE_COUNT = 1800;
-
 export default function Galaxy() {
-  const pointsRef = useRef(null);
-  const materialRef = useRef(null);
+  const groupRef = useRef();
 
-  const { positions, colors } = useMemo(() => {
-    const positionArray = new Float32Array(PARTICLE_COUNT * 3);
-    const colorArray = new Float32Array(PARTICLE_COUNT * 3);
-    const blue = new THREE.Color("#2bcbff");
-    const violet = new THREE.Color("#7b63ff");
-    const pink = new THREE.Color("#ff3cf7");
+  /*
+   * ==========================================
+   * GALAXY TIMING
+   * ==========================================
+   *
+   * Increase these numbers = slower animation
+   *
+   * 8   = fast
+   * 15  = medium
+   * 25  = slow
+   * 40  = very slow / cinematic
+   */
 
-    for (let index = 0; index < PARTICLE_COUNT; index += 1) {
-      const progress = index / (PARTICLE_COUNT - 1);
-      const ribbon = Math.floor(index % 6);
-      const ribbonOffset = (ribbon - 2.5) * 0.08;
-      const angle = progress * Math.PI * 4.2 + ribbon * 0.24;
-      const radius = 0.75 + progress * 2.65;
-      const wave = Math.sin(progress * Math.PI * 3.4) * 0.34;
+  const ROTATION_TIME = 40;
+  const FLOW_TIME = 18;
+  const WAVE_TIME = 12;
 
-      positionArray[index * 3] = -2.72 + progress * 5.46 + Math.cos(angle) * (0.12 + ribbon * 0.008);
-      positionArray[index * 3 + 1] = -1.54 + progress * 3.18 + wave + ribbonOffset;
-      positionArray[index * 3 + 2] = -1.82 + Math.sin(angle) * radius * 0.18 + ribbonOffset * 0.45;
+  const particles = useMemo(() => {
+    const count = 6500;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
 
-      const mixed = progress < 0.52
-        ? blue.clone().lerp(violet, progress / 0.52)
-        : violet.clone().lerp(pink, (progress - 0.52) / 0.48);
+    const color1 = new THREE.Color("#22d3ee");
+    const color2 = new THREE.Color("#6366f1");
+    const color3 = new THREE.Color("#d946ef");
 
-      colorArray[index * 3] = mixed.r;
-      colorArray[index * 3 + 1] = mixed.g;
-      colorArray[index * 3 + 2] = mixed.b;
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+
+      const t = Math.random();
+      const angle = t * Math.PI * 2;
+
+      /*
+       * Large flowing ribbon shape
+       */
+      const radius =
+        1.2 +
+        Math.random() * 3.5;
+
+      const wave =
+        Math.sin(angle * 2.2) * 0.75 +
+        Math.sin(angle * 4.0) * 0.3;
+
+      const x =
+        Math.cos(angle) * radius;
+
+      const z =
+        Math.sin(angle) * radius;
+
+      const y =
+        wave +
+        (Math.random() - 0.5) * 0.18;
+
+      positions[i3] = x;
+      positions[i3 + 1] = y;
+      positions[i3 + 2] = z;
+
+      /*
+       * Cyan → blue → purple
+       */
+      const colorT = Math.random();
+
+      let color;
+
+      if (colorT < 0.45) {
+        color = color1.clone().lerp(
+          color2,
+          colorT / 0.45
+        );
+      } else {
+        color = color2.clone().lerp(
+          color3,
+          (colorT - 0.45) / 0.55
+        );
+      }
+
+      colors[i3] = color.r;
+      colors[i3 + 1] = color.g;
+      colors[i3 + 2] = color.b;
     }
 
-    return { positions: positionArray, colors: colorArray };
+    return {
+      positions,
+      colors,
+    };
   }, []);
 
   useFrame((state) => {
+    if (!groupRef.current) return;
+
     const elapsed = state.clock.elapsedTime;
 
-    if (pointsRef.current) {
-      pointsRef.current.rotation.z = Math.sin(elapsed * 0.12) * 0.055 - 0.1;
-      pointsRef.current.rotation.y = Math.sin(elapsed * 0.1) * 0.05;
-      pointsRef.current.position.y = Math.sin(elapsed * 0.18) * 0.08;
-    }
+    /*
+     * ==========================================
+     * MAIN GALAXY ROTATION
+     * ==========================================
+     *
+     * 40 seconds for one complete rotation.
+     */
+    groupRef.current.rotation.y =
+      (elapsed / ROTATION_TIME) *
+      Math.PI *
+      2;
 
-    if (materialRef.current) {
-      materialRef.current.opacity = 0.64 + Math.sin(elapsed * 0.55) * 0.08;
-    }
+    /*
+     * ==========================================
+     * SLOW VERTICAL MOTION
+     * ==========================================
+     */
+    groupRef.current.position.y =
+      Math.sin(
+        (elapsed / WAVE_TIME) *
+          Math.PI *
+          2
+      ) * 0.08;
+
+    /*
+     * ==========================================
+     * VERY SUBTLE SIDE MOVEMENT
+     * ==========================================
+     */
+    groupRef.current.position.x =
+      Math.sin(
+        (elapsed / FLOW_TIME) *
+          Math.PI *
+          2
+      ) * 0.12;
   });
 
   return (
-    <points ref={pointsRef} position={[0.05, 0.1, -0.42]} rotation={[0.04, -0.18, -0.1]}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        ref={materialRef}
-        vertexColors
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        size={0.032}
-        sizeAttenuation
-        opacity={0.68}
-      />
-    </points>
+    <group
+      ref={groupRef}
+      position={[0, 0, -0.8]}
+      rotation={[0.15, 0, -0.18]}
+      scale={1.18}
+    >
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={particles.positions.length / 3}
+            array={particles.positions}
+            itemSize={3}
+          />
+
+          <bufferAttribute
+            attach="attributes-color"
+            count={particles.colors.length / 3}
+            array={particles.colors}
+            itemSize={3}
+          />
+        </bufferGeometry>
+
+        <pointsMaterial
+          size={0.025}
+          vertexColors
+          transparent
+          opacity={0.82}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+          sizeAttenuation
+        />
+      </points>
+    </group>
   );
 }

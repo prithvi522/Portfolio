@@ -1,20 +1,49 @@
-import { Stars as DreiStars } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo } from "react";
+import * as THREE from "three";
 
 export default function Stars() {
-  const starsRef = useRef(null);
+  const count = 1300;
 
-  useFrame((state) => {
-    if (starsRef.current) {
-      starsRef.current.rotation.y = state.clock.elapsedTime * 0.012;
-      starsRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.08) * 0.025;
+  const positions = useMemo(() => {
+    const data = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      data[i * 3] =
+        (Math.random() - 0.5) * 11;
+
+      data[i * 3 + 1] =
+        (Math.random() - 0.5) * 7;
+
+      data[i * 3 + 2] =
+        (Math.random() - 0.5) * 5 - 1;
     }
-  });
+
+    return data;
+  }, []);
 
   return (
-    <group ref={starsRef} position={[0.8, 0.1, -1.6]}>
-      <DreiStars radius={8} depth={4} count={520} factor={2.4} saturation={0.6} fade speed={0.18} />
-    </group>
+    <points>
+
+      <bufferGeometry>
+
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+
+      </bufferGeometry>
+
+      <pointsMaterial
+        color="#b7eaff"
+        size={0.018}
+        transparent
+        opacity={0.75}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+
+    </points>
   );
 }

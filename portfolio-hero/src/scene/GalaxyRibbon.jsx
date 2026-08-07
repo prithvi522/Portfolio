@@ -1,113 +1,176 @@
-import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const PARTICLE_COUNT = 2200;
+export default function GalaxyRibbon({
+  index = 0,
+  count = 900,
+  width = 7.5,
+  height = 2.8,
+}) {
+  const pointsRef = useRef();
 
-export default function GalaxyRibbon() {
-  const pointsRef = useRef(null);
-  const materialRef = useRef(null);
+  const { positions, basePositions, colors } = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    const basePositions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
 
-  const geometry = useMemo(() => {
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const progress = new Float32Array(PARTICLE_COUNT);
-    const offsets = new Float32Array(PARTICLE_COUNT);
+    const colorA = new THREE.Color("#22d3ee");
+    const colorB = new THREE.Color("#6366f1");
+    const colorC = new THREE.Color("#d946ef");
 
-    for (let index = 0; index < PARTICLE_COUNT; index += 1) {
-      const t = index / (PARTICLE_COUNT - 1);
-      const lane = (index % 9) - 4;
-      const angle = t * Math.PI * 4.8 + lane * 0.18;
-      const laneOffset = lane * 0.038;
-      const radius = 0.82 + t * 2.2;
-      const wave = Math.sin(t * Math.PI * 3.2) * 0.34;
+    for (let i = 0; i < count; i++) {
+      const t = i / (count - 1);
 
-      positions[index * 3] = -2.8 + t * 5.58 + Math.cos(angle) * 0.13;
-      positions[index * 3 + 1] = -1.48 + t * 3.12 + wave + laneOffset;
-      positions[index * 3 + 2] = -1.76 + Math.sin(angle) * radius * 0.18 + laneOffset;
-      progress[index] = t;
-      offsets[index] = Math.random();
+      // Spread ribbon across the COMPLETE scene
+      const x = (t - 0.5) * width * 2.2;
+
+      // Main flowing wave
+      const wave =
+        Math.sin(t * Math.PI * 2.4 + index * 0.8) * height * 0.22 +
+        Math.sin(t * Math.PI * 5.2 + index) * height * 0.08;
+
+      // Different vertical lanes
+      const lane =
+        (index - 2) * 0.48;
+
+      // Small particle thickness
+      const y =
+        wave +
+        lane +
+        (Math.random() - 0.5) * 0.14;
+
+      const z =
+        Math.sin(t * Math.PI * 3.0 + index) * 0.25 +
+        (Math.random() - 0.5) * 0.35;
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      basePositions[i * 3] = x;
+      basePositions[i * 3 + 1] = y;
+      basePositions[i * 3 + 2] = z;
+
+      // Cyan -> blue -> purple -> pink
+      const c = new THREE.Color();
+
+      if (t < 0.5) {
+        c.copy(colorA).lerp(colorB, t * 2);
+      } else {
+        c.copy(colorB).lerp(colorC, (t - 0.5) * 2);
+      }
+
+      // Slight random variation
+      c.offsetHSL(
+        (Math.random() - 0.5) * 0.03,
+        0,
+        (Math.random() - 0.5) * 0.08
+      );
+
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
     }
 
-    const bufferGeometry = new THREE.BufferGeometry();
-    bufferGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    bufferGeometry.setAttribute("aProgress", new THREE.BufferAttribute(progress, 1));
-    bufferGeometry.setAttribute("aOffset", new THREE.BufferAttribute(offsets, 1));
-    return bufferGeometry;
-  }, []);
-
-  const material = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 },
-        uColorA: { value: new THREE.Color("#2bcbff") },
-        uColorB: { value: new THREE.Color("#7b63ff") },
-        uColorC: { value: new THREE.Color("#ff3cf7") },
-      },
-      vertexShader: `
-        attribute float aProgress;
-        attribute float aOffset;
-        varying float vProgress;
-        varying float vAlpha;
-        uniform float uTime;
-
-        void main() {
-          vec3 transformed = position;
-          float flow = sin((aProgress * 16.0) - (uTime * 0.75) + (aOffset * 6.2831));
-          transformed.y += flow * 0.045;
-          transformed.z += cos((aProgress * 12.0) + (uTime * 0.45)) * 0.045;
-
-          vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
-          gl_PointSize = (18.0 + flow * 3.0) * (1.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-
-          vProgress = aProgress;
-          vAlpha = 0.35 + smoothstep(0.0, 0.18, aProgress) * smoothstep(1.0, 0.78, aProgress) * 0.65;
-        }
-      `,
-      fragmentShader: `
-        varying float vProgress;
-        varying float vAlpha;
-        uniform vec3 uColorA;
-        uniform vec3 uColorB;
-        uniform vec3 uColorC;
-
-        void main() {
-          vec2 uv = gl_PointCoord - vec2(0.5);
-          float circle = 1.0 - smoothstep(0.18, 0.5, length(uv));
-          vec3 color = mix(uColorA, uColorB, smoothstep(0.0, 0.58, vProgress));
-          color = mix(color, uColorC, smoothstep(0.54, 1.0, vProgress));
-          gl_FragColor = vec4(color, circle * vAlpha);
-        }
-      `,
-    });
-  }, []);
+    return {
+      positions,
+      basePositions,
+      colors,
+    };
+  }, [count, width, height, index]);
 
   useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
+    if (!pointsRef.current) return;
+
+    const elapsed = state.clock.elapsedTime;
+    const position = pointsRef.current.geometry.attributes.position;
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+
+      const originalX = basePositions[i3];
+      const originalY = basePositions[i3 + 1];
+      const originalZ = basePositions[i3 + 2];
+
+      // VERY strong continuous horizontal flow
+      const flow =
+        Math.sin(elapsed * 0.85 + originalX * 0.75 + index) *
+        0.42;
+
+      // Large traveling wave
+      const wave =
+        Math.sin(
+          originalX * 1.15 -
+            elapsed * 1.25 +
+            index * 0.8
+        ) *
+        0.32;
+
+      // Secondary wave
+      const wave2 =
+        Math.sin(
+          originalX * 2.4 -
+            elapsed * 1.8 +
+            index
+        ) *
+        0.08;
+
+      position.array[i3] =
+        originalX +
+        Math.sin(elapsed * 0.45 + originalY) * 0.12;
+
+      position.array[i3 + 1] =
+        originalY +
+        flow +
+        wave +
+        wave2;
+
+      position.array[i3 + 2] =
+        originalZ +
+        Math.sin(
+          originalX * 1.5 -
+            elapsed * 0.9
+        ) * 0.22;
     }
 
-    if (pointsRef.current) {
-      const elapsed = state.clock.elapsedTime;
-      pointsRef.current.rotation.z = -0.11 + Math.sin(elapsed * 0.1) * 0.04;
-      pointsRef.current.rotation.y = -0.16 + Math.sin(elapsed * 0.09) * 0.035;
-      pointsRef.current.position.y = Math.sin(elapsed * 0.16) * 0.055;
-    }
+    position.needsUpdate = true;
+
+    // Slowly rotate the complete ribbon field
+    pointsRef.current.rotation.z =
+      Math.sin(elapsed * 0.12 + index) * 0.035;
+
+    pointsRef.current.rotation.y =
+      Math.sin(elapsed * 0.1 + index) * 0.025;
   });
 
   return (
-    <points
-      ref={pointsRef}
-      geometry={geometry}
-      material={material}
-      position={[0.06, 0.08, -0.42]}
-      rotation={[0.03, -0.16, -0.11]}
-      onUpdate={() => {
-        materialRef.current = material;
-      }}
-    />
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={positions}
+          itemSize={3}
+        />
+
+        <bufferAttribute
+          attach="attributes-color"
+          count={count}
+          array={colors}
+          itemSize={3}
+        />
+      </bufferGeometry>
+
+      <pointsMaterial
+        size={0.035 + index * 0.004}
+        vertexColors
+        transparent
+        opacity={0.82}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
   );
 }
