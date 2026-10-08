@@ -9,63 +9,106 @@ export default function Torus({
   const mainRef = useRef(null);
   const glowRef = useRef(null);
   const outerRef = useRef(null);
+  const innerRef = useRef(null);
 
   useFrame((state, delta) => {
     const time = state.clock.elapsedTime;
 
-    // ==========================================
-    // MAIN RING — FAST + SMOOTH ROTATION
-    // ==========================================
+    /* ==========================================
+       MAIN RING
+       Smooth continuous rotation
+    ========================================== */
+
     if (mainRef.current) {
-      mainRef.current.rotation.y += delta * 1.45;
+      mainRef.current.rotation.y += delta * 1.15;
 
       mainRef.current.rotation.x =
-        0.92 + Math.sin(time * 0.8) * 0.025;
+        0.92 +
+        Math.sin(time * 0.65) * 0.035;
 
       mainRef.current.rotation.z =
-        -0.38 + Math.sin(time * 0.55) * 0.018;
+        -0.38 +
+        Math.cos(time * 0.45) * 0.025;
     }
 
-    // ==========================================
-    // CYAN GLOW RING — COUNTER ROTATION
-    // ==========================================
+
+    /* ==========================================
+       CYAN GLOW RING
+       Smooth counter rotation
+    ========================================== */
+
     if (glowRef.current) {
-      glowRef.current.rotation.y -= delta * 1.05;
+      glowRef.current.rotation.y -= delta * 0.85;
 
       glowRef.current.rotation.x =
-        0.92 + Math.sin(time * 0.65) * 0.02;
+        0.92 +
+        Math.sin(time * 0.55 + 1.5) * 0.025;
 
       glowRef.current.rotation.z =
-        -0.38 + Math.sin(time * 0.5) * 0.015;
+        -0.38 +
+        Math.cos(time * 0.4 + 1) * 0.02;
 
+      /* Smooth glow pulse */
       glowRef.current.material.opacity =
-        0.12 + Math.sin(time * 2.2) * 0.035;
+        0.10 +
+        Math.sin(time * 1.8) * 0.035;
     }
 
-    // ==========================================
-    // OUTER WIRE RING — FASTEST
-    // ==========================================
+
+    /* ==========================================
+       OUTER ENERGY RING
+       Faster but still smooth
+    ========================================== */
+
     if (outerRef.current) {
-      outerRef.current.rotation.y += delta * 1.8;
-      outerRef.current.rotation.x -= delta * 0.12;
+      outerRef.current.rotation.y += delta * 1.45;
+
+      outerRef.current.rotation.x =
+        0.92 +
+        Math.sin(time * 0.35) * 0.04;
+
+      outerRef.current.rotation.z =
+        -0.38 +
+        Math.cos(time * 0.3) * 0.025;
+    }
+
+
+    /* ==========================================
+       INNER ENERGY RING
+       Slow counter movement
+    ========================================== */
+
+    if (innerRef.current) {
+      innerRef.current.rotation.y -= delta * 0.65;
+
+      innerRef.current.rotation.x =
+        0.92 +
+        Math.cos(time * 0.5) * 0.025;
+
+      innerRef.current.rotation.z =
+        -0.38 +
+        Math.sin(time * 0.4) * 0.02;
     }
   });
 
+
   return (
     <Float
-      speed={0.65}
-      rotationIntensity={0.025}
-      floatIntensity={0.08}
-      floatingRange={[-0.035, 0.035]}
+      speed={0.55}
+      rotationIntensity={0.018}
+      floatIntensity={0.055}
+      floatingRange={[-0.025, 0.025]}
     >
+
       <group
         position={position}
         scale={scale}
       >
 
         {/* =====================================
-            MAIN TORUS — LARGER
+            MAIN TORUS
         ===================================== */}
+
         <mesh
           ref={mainRef}
           rotation={[0.92, 0, -0.38]}
@@ -91,8 +134,9 @@ export default function Torus({
 
 
         {/* =====================================
-            SOFT CYAN GLOW — LARGER
+            SOFT CYAN GLOW
         ===================================== */}
+
         <mesh
           ref={glowRef}
           rotation={[0.92, 0, -0.38]}
@@ -117,8 +161,9 @@ export default function Torus({
 
 
         {/* =====================================
-            OUTER ENERGY RING — LARGER
+            OUTER ENERGY RING
         ===================================== */}
+
         <mesh
           ref={outerRef}
           rotation={[0.92, 0, -0.38]}
@@ -142,9 +187,11 @@ export default function Torus({
 
 
         {/* =====================================
-            INNER ENERGY RING — LARGER
+            INNER ENERGY RING
         ===================================== */}
+
         <mesh
+          ref={innerRef}
           rotation={[0.92, 0, -0.38]}
           scale={1.08}
         >
@@ -165,6 +212,7 @@ export default function Torus({
         </mesh>
 
       </group>
+
     </Float>
   );
 }

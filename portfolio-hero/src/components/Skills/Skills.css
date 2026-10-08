@@ -1,0 +1,370 @@
+/* =========================================================
+   SKILLS SECTION
+========================================================= */
+
+.skills-section {
+  position: relative;
+
+  width: 100%;
+  height: 100vh;
+  min-height: 650px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 75% 50%,
+      rgba(34, 211, 238, 0.08),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 35%,
+      rgba(139, 92, 246, 0.12),
+      transparent 38%
+    ),
+    #03030d;
+}
+
+
+/* =========================================================
+   THREE.JS
+========================================================= */
+
+
+
+
+/* =========================================================
+   DARK LEFT OVERLAY
+========================================================= */
+
+.skills-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 3, 13, 0.98) 0%,
+      rgba(3, 3, 13, 0.94) 20%,
+      rgba(3, 3, 13, 0.72) 40%,
+      rgba(3, 3, 13, 0.25) 62%,
+      transparent 82%
+    );
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.skills-content {
+  position: absolute;
+
+  left: 5%;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 520px;
+  max-width: 42vw;
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.skills-label {
+  position: relative;
+
+  margin-bottom: 18px;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.55em;
+
+  color: #22d3ee;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 0 15px rgba(34, 211, 238, 0.55);
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+.skills-title {
+  margin: 0;
+
+  position: relative;
+
+  z-index: 100;
+
+  display: block;
+
+  width: max-content;
+  max-width: 100%;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: clamp(58px, 6vw, 94px);
+
+  line-height: 0.98;
+
+  font-weight: 700;
+
+  letter-spacing: -0.045em;
+
+  overflow: visible;
+}
+
+
+/* ===============================
+   SKILLS &
+================================ */
+
+.skills-first {
+  display: block;
+
+  position: relative;
+
+  z-index: 101;
+
+  color: #ffffff;
+
+  white-space: nowrap;
+
+  overflow: visible;
+}
+
+
+/* ===============================
+   TECHNOLOGIES
+================================ */
+
+.skills-second {
+  display: block;
+
+  position: relative;
+
+  z-index: 101;
+
+  white-space: nowrap;
+
+  overflow: visible;
+
+  color: #22d3ee;
+
+  background: linear-gradient(
+    100deg,
+    #22d3ee 0%,
+    #6366f1 48%,
+    #c026d3 100%
+  );
+
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  /* Important */
+  /* -webkit-text-fill-color: transparent; */
+
+  padding-right: 0.15em;
+}
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.skills-description {
+  margin: 32px 0 0;
+
+  max-width: 500px;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+  font-size: 18px;
+
+  line-height: 1.8;
+
+  color:
+    rgba(226, 232, 240, 0.72);
+
+  text-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.7);
+}
+
+
+/* =========================================================
+   LINE
+========================================================= */
+
+.skills-line {
+  position: relative;
+
+  width: 260px;
+  height: 2px;
+
+  margin-top: 35px;
+
+  background: linear-gradient(
+    90deg,
+    #22d3ee,
+    #6366f1,
+    transparent
+  );
+
+  box-shadow:
+    0 0 15px rgba(34, 211, 238, 0.35);
+
+  overflow: visible;
+}
+
+
+/* =========================================
+   MOVING ENERGY DOT
+========================================= */
+
+.skills-line span {
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  width: 9px;
+  height: 9px;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 8px #ffffff,
+    0 0 18px #22d3ee,
+    0 0 30px #8b5cf6;
+
+  animation: skillsLineMove 2.8s ease-in-out infinite;
+}
+
+
+/* =========================================
+   BACK & FORTH MOTION
+========================================= */
+
+@keyframes skillsLineMove {
+
+  0% {
+    left: 0%;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: 0%;
+  }
+
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .skills-content {
+    left: 6%;
+
+    width: 480px;
+    max-width: 50vw;
+  }
+
+  .skills-title {
+    font-size: clamp(
+      55px,
+      7vw,
+      80px
+    );
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .skills-section {
+    min-height: 700px;
+  }
+
+  .skills-scene {
+    opacity: 0.7;
+  }
+
+  .skills-overlay {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(3, 3, 13, 0.96),
+        rgba(3, 3, 13, 0.72)
+      );
+  }
+
+  .skills-content {
+    left: 24px;
+    right: 24px;
+
+    width: auto;
+    max-width: none;
+  }
+
+  .skills-label {
+    font-size: 12px;
+    letter-spacing: 0.4em;
+  }
+
+  .skills-title {
+    font-size: clamp(
+      52px,
+      15vw,
+      78px
+    );
+  }
+
+  .skills-description {
+    font-size: 15px;
+
+    line-height: 1.7;
+  }
+
+  .skills-line {
+    width: 200px;
+  }
+}

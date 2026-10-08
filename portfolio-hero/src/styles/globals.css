@@ -1,108 +1,191 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-html{
-
-    scroll-behavior:smooth;
-
+html {
+  scroll-behavior: smooth;
 }
 
-body{
+body {
+  margin: 0;
+  padding: 0;
 
-    background:var(--bg);
+  min-width: 320px;
 
-    color:var(--white);
+  background: #03030d;
+  color: #ffffff;
 
-    font-family:Inter,sans-serif;
+  overflow-x: hidden;
 
-    overflow-x:hidden;
-
+  font-family: Inter, Arial, sans-serif;
 }
 
-body::-webkit-scrollbar{
-
-    width:8px;
-
+#root {
+  width: 100%;
+  min-height: 100vh;
 }
 
-body::-webkit-scrollbar-thumb{
 
-    background:linear-gradient(
-    var(--primary),
-    var(--pink)
-    );
+/* =========================================================
+   MAIN PORTFOLIO
+========================================================= */
 
-    border-radius:20px;
+.portfolio {
+  position: relative;
 
+  width: 100%;
+
+  overflow: visible;
 }
 
-a{
 
-    text-decoration:none;
+/* =========================================================
+   HERO STICKY BACKGROUND
+========================================================= */
 
-    color:inherit;
+.hero-sticky {
+  position: sticky;
 
+  top: 0;
+
+  width: 100%;
+  height: calc(100vh - 80px);
+
+  min-height: 650px;
+
+  z-index: 0;
+
+  overflow: hidden;
 }
 
-ul{
 
-    list-style:none;
+/* =========================================================
+   SKILLS OVERLAPS HERO
+========================================================= */
 
+.skills-overlap {
+  position: relative;
+
+  width: 100%;
+
+  min-height: calc(100vh - 80px);
+
+  z-index: 10;
+
+  background:
+    #030614;
+
+  /*
+    This shadow makes the Skills panel feel
+    like it is physically sliding over Hero.
+  */
+  box-shadow:
+    0 -30px 80px rgba(0, 0, 0, 0.45);
 }
 
-button{
 
-    border:none;
+/* =========================================================
+   SKILLS CONTENT MUST FILL PANEL
+========================================================= */
 
-    outline:none;
-
-    cursor:pointer;
-
-    background:none;
-
+.skills-overlap > * {
+  width: 100%;
 }
 
-img{
 
-    display:block;
+/* =========================================================
+   FUTURE SECTIONS
+========================================================= */
 
-    max-width:100%;
+.section-overlap {
+  position: relative;
 
+  width: 100%;
+  min-height: 100vh;
+
+  z-index: 20;
+
+  background: #030614;
 }
 
-section{
 
-    width:100%;
+/* =========================================================
+   NAVBAR ABOVE EVERYTHING
+========================================================= */
 
-    position:relative;
+.navbar,
+header,
+nav {
+  position: relative;
 
+  z-index: 100;
 }
 
-.container{
 
-    width:min(1400px,90%);
+/* =========================================================
+   SCROLLBAR
+========================================================= */
 
-    margin:auto;
-
+body::-webkit-scrollbar {
+  width: 8px;
 }
 
-canvas{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:-10;
-
+body::-webkit-scrollbar-track {
+  background: #02020a;
 }
 
-::selection{
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #20dff2,
+    #8b5cf6,
+    #c026d3
+  );
 
-    background:var(--primary);
+  border-radius: 20px;
+}
 
-    color:white;
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #22d3ee,
+    #a855f7,
+    #d946ef
+  );
+}
+
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .hero-sticky {
+    height: calc(100vh - 70px);
+
+    min-height: 600px;
+  }
+
+  .skills-overlap {
+    min-height: calc(100vh - 70px);
+  }
 
 }
