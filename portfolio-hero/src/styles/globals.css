@@ -55,9 +55,9 @@ body {
   top: 0;
 
   width: 100%;
-  height: calc(100vh - 80px);
-
-  min-height: 650px;
+  height: 100vh;
+  height: 100svh;
+  min-height: 600px;
 
   z-index: 0;
 
@@ -179,9 +179,9 @@ body::-webkit-scrollbar-thumb:hover {
 @media (max-width: 768px) {
 
   .hero-sticky {
-    height: calc(100vh - 70px);
-
-    min-height: 600px;
+    height: 100vh;
+    height: 100svh;
+    min-height: 560px;
   }
 
   .skills-overlap {

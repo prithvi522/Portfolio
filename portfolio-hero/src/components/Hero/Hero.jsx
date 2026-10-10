@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "framer-motion";
 import {
   FaGithub,
   FaLinkedinIn,
@@ -5,129 +6,82 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 
-import Scene from "../../scene/Scene";
-
 import "./Hero.css";
 
+const reveal = {
+  hidden: { opacity: 0, y: 18 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const heroSequence = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.13, delayChildren: 0.08 },
+  },
+};
+
 export default function Hero() {
+  const reduceMotion = useReducedMotion();
+  const initial = reduceMotion ? false : "hidden";
+
   return (
-    <section className="hero">
+    <section className="hero" aria-labelledby="hero-title">
+      <video
+        className="hero-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+      >
+        <source src={`${import.meta.env.BASE_URL}portfolio-hero.mp4`} type="video/mp4" />
+      </video>
 
-      {/* =========================================
-          THREE.JS BACKGROUND
-      ========================================= */}
-      <div className="hero-scene">
-        <Scene />
-      </div>
+      <div className="hero-video-overlay" aria-hidden="true" />
+      <div className="hero-atmosphere" aria-hidden="true" />
 
-
-      {/* =========================================
-          DARK LEFT OVERLAY
-      ========================================= */}
-      <div className="hero-left-glow" />
-
-
-      {/* =========================================
-          HERO CONTENT
-      ========================================= */}
-      <div className="hero-content">
-
-        {/* Greeting */}
-        <div className="hero-greeting">
+      <motion.div
+        className="hero-content"
+        variants={heroSequence}
+        initial={initial}
+        animate="visible"
+      >
+        <motion.div className="hero-greeting" variants={reveal}>
           HELLO, I'M
-        </div>
+        </motion.div>
 
+        <motion.h1 className="hero-name" id="hero-title" variants={reveal}>
+          <span className="hero-name-white">Prithviraj</span>
+          <span className="hero-name-gradient">Gavali</span>
+        </motion.h1>
 
-        {/* Name */}
-        <h1 className="hero-name">
-
-          <span className="hero-name-white">
-            Prithviraj
-          </span>
-
-          <span className="hero-name-gradient">
-            Gavali
-          </span>
-
-        </h1>
-
-
-        {/* Divider */}
-        <div className="hero-divider">
+        <motion.div className="hero-divider" variants={reveal} aria-hidden="true">
           <span />
-        </div>
+        </motion.div>
 
-
-        {/* Role */}
-        <h2 className="hero-role">
+        <motion.h2 className="hero-role" variants={reveal}>
           Frontend Developer &amp; Creative Technologist
-        </h2>
+        </motion.h2>
 
-
-        {/* Description */}
-        <p className="hero-description">
+        <motion.p className="hero-description" variants={reveal}>
           I craft exceptional digital experiences with clean code,
           smooth animations, and <span>modern design.</span>
-        </p>
+        </motion.p>
 
+        <motion.div className="hero-socials" variants={reveal}>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn"><FaLinkedinIn /></a>
+          <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub"><FaGithub /></a>
+          <a href="#" aria-label="Twitter"><FaTwitter /></a>
+          <a href="mailto:your@email.com" aria-label="Email"><FaEnvelope /></a>
+        </motion.div>
+      </motion.div>
 
-        {/* Social Icons */}
-        <div className="hero-socials">
-
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="LinkedIn"
-          >
-            <FaLinkedinIn />
-          </a>
-
-
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-          >
-            <FaGithub />
-          </a>
-
-
-          <a
-            href="#"
-            aria-label="Twitter"
-          >
-            <FaTwitter />
-          </a>
-
-
-          <a
-            href="mailto:your@email.com"
-            aria-label="Email"
-          >
-            <FaEnvelope />
-          </a>
-
-        </div>
-
-      </div>
-
-
-      {/* =========================================
-          SCROLL INDICATOR
-      ========================================= */}
-      <div className="hero-scroll">
-
-        <div className="scroll-line">
-          <div className="scroll-dot" />
-        </div>
-
+      <div className="hero-scroll" aria-hidden="true">
+        <div className="scroll-line"><div className="scroll-dot" /></div>
         <span>SCROLL</span>
         <span>DOWN</span>
-
       </div>
-
     </section>
   );
 }
